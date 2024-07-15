@@ -5,9 +5,33 @@ import { useEffect, useState } from "react";
 import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase";
 
-const Datatable = ({columns=[]}) => {
+const Datatable = ({columns}) => {
   const location = useLocation();
   const type = location.pathname.split('/')[1];
+
+  const actionColumn = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            <Link to={"/" + type + "/" + params.row.id} style={{ textDecoration: "none" }}>
+              <span className="viewButton">View</span>
+            </Link> 
+            <span>
+              <span
+                className="deleteButton"
+                onClick={() => handleDelete(params.row.id)}>
+                Delete
+              </span>
+            </span>
+          </div>
+        );
+      },
+    },
+  ];
 
   const [data, setData] = useState([]);
 
@@ -29,7 +53,7 @@ const Datatable = ({columns=[]}) => {
     return () => {
       unsub();
     };
-  }, [type]);
+  }, [type]); 
 
   const handleDelete = async (id) => {
     try {
@@ -40,32 +64,6 @@ const Datatable = ({columns=[]}) => {
     }
   };
 
-  const actionColumn = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <div className="cellAction">
-            <Link to={"/" + type + "/" + params.row.id} style={{ textDecoration: "none" }}>
-              <span className="viewButton">View</span>
-            </Link>
-            <span>
-              <span
-                className="deleteButton"
-                onClick={() => handleDelete(params.row.id)}
-              >
-                Delete
-              </span>
-            </span>
-          </div>
-        );
-      },
-    },
-  ];
-
-  
   return (
     <div className="datatable">
       <div className="datatableTitle">
@@ -74,7 +72,7 @@ const Datatable = ({columns=[]}) => {
           Add New
         </Link>
       </div>
-      <DataGrid className="datagrid" 
+      <DataGrid className="datagrid"
         rows={data}
         columns={columns.concat(actionColumn)}
         initialState={{

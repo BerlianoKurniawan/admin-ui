@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+// eslint-disable-next-line react/prop-types
 const Chart = ({ type, aspect }) => {
   let listData;
 
